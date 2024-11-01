@@ -41,7 +41,7 @@ defmodule ChessMate.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       # TODO bump on release to {:phoenix_live_view, "~> 1.0.0"},
       {:phoenix_live_view, "~> 1.0.0-rc.1", override: true},
-      {:floki, ">= 0.36.3", only: [:test, :dev]},
+      {:floki, ">= 0.36.3"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},

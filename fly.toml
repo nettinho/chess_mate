@@ -13,7 +13,7 @@ kill_signal = 'SIGTERM'
   release_command = '/app/bin/migrate'
 
 [env]
-  PHX_HOST = 'chess-mate.fly.dev'
+  PHX_HOST = 'chessmate.es'
   PORT = '8080'
 
 [http_service]

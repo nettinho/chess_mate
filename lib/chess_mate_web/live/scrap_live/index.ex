@@ -49,8 +49,8 @@ defmodule ChessMateWeb.ScrapLive.Index do
           |> elem(1))
       )
 
-    # send(self(), {:fetch_players, teams, 0})
-    send(self(), {:fetch_players, [], 0})
+    send(self(), {:fetch_players, teams, 0})
+    # send(self(), {:fetch_players, [], 0})
     {:noreply, assign(socket, step: "Fetching players")}
   end
 

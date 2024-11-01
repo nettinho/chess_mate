@@ -1,0 +1,38 @@
+<.header>
+  User <%= @user.id %>
+  <:actions>
+    <.link patch={~p"/users/#{@user}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit user</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Email"><%= @user.email %></:item>
+  <:item title="Is admin"><%= @user.is_admin %></:item>
+  <:item title="Roles">
+    <div :for={%{role: role, team_prefix: team_prefix} <- @user.roles}>
+      <%= role %>
+      <.icon class="h-3 w-3" name="hero-arrow-right" />
+      <%= team_prefix %>
+    </div>
+  </:item>
+</.list>
+
+<.back navigate={~p"/users"}>Back to users</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="user-modal"
+  show
+  on_cancel={JS.patch(~p"/users/#{@user}")}
+  title={@user.email}
+>
+  <.live_component
+    module={ChessMateWeb.UserLive.FormComponent}
+    id={@user.id}
+    action={@live_action}
+    user={@user}
+    patch={~p"/users/#{@user}"}
+  />
+</.modal>

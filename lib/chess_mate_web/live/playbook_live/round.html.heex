@@ -1,0 +1,92 @@
+<div :if={is_nil(@team_round)} class="w-full text-center text-2xl text-gray-900 dark:text-white">
+  Cargando...
+</div>
+<section :if={@team_round} class="max-w-3xl mx-auto">
+  <h2 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+    <%= @team_round.team.name %>
+  </h2>
+  <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+    <%= "Ronda #{@team_round.round.round}" %>
+  </h2>
+
+  <div class="relative overflow-x-auto">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-6 py-3 rounded-s-lg">
+            No.
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Nombre
+          </th>
+          <th scope="col" class="px-6 py-3">
+            <.icon class="h-5 w-5" name="svg-available" />
+          </th>
+          <th scope="col" class="px-6 py-3">
+            <.icon class="h-5 w-5" name="svg-unavailable" />
+          </th>
+          <th scope="col" class="px-6 py-3">
+            <.icon class="h-5 w-5" name="svg-unknown" />
+          </th>
+          <th scope="col" class="px-6 py-3">
+            <.icon class="h-5 w-5" name="svg-pending" />
+          </th>
+          <th scope="col" class="px-6 py-3 rounded-e-lg">
+            Convocado
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          :for={
+            %{
+              id: id,
+              team_player: %{player: %{name: name}, board_number: board_number},
+              status: status
+            } <- @players
+          }
+          class="bg-white dark:bg-gray-800 border border-white/0 hover:border-gray-500/40"
+        >
+          <th scope="row" class="text-center px-6 py-4">
+            <%= board_number %>
+          </th>
+          <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <%= name %>
+          </td>
+
+          <td
+            :for={col_status <- ["available", "unavailable", "unknown", "pending"]}
+            class="text-center py-4 cursor-pointer hover:bg-sky-500/15"
+            phx-click={JS.push("change_availability", value: %{status: col_status, id: id})}
+          >
+            <.icon
+              class={(status == col_status && "h-6 w-6") || "h-4 w-4 filter grayscale"}
+              name={"svg-#{col_status}"}
+            />
+          </td>
+          <td
+            class="text-center py-4 cursor-pointer hover:bg-sky-500/15"
+            phx-click={JS.push("toggle_lineup", value: %{id: id})}
+          >
+            <%= if id in @team_round.lineup do %>
+              <.icon class="h-5 w-5" name="svg-true" />
+            <% else %>
+              <.icon class="h-3 w-3" name="svg-false" />
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold text-gray-900 dark:text-white">
+          <td class="text-center px-6 py-3"><%= @total_count %></td>
+          <td class="text-center px-6 py-3"></td>
+          <td class="text-center px-6 py-3"><%= @available_count %></td>
+          <td class="text-center px-6 py-3"><%= @unavailable_count %></td>
+          <td class="text-center px-6 py-3"><%= @unknown_count %></td>
+          <td class="text-center px-6 py-3"><%= @pending_count %></td>
+          <td class="text-center px-6 py-3"><%= @lineup_count %></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,123 @@
+<section class="max-w-5xl mx-auto">
+  <div
+    :for={%{next_round: %{round: round}, teams: teams, id: id} = tournment <- @tournments}
+    class="w-full"
+  >
+    <h3 class="mb-2 text-lg text-gray-900 dark:text-white">
+      <%= tournment.name %>
+    </h3>
+    <h2 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+      Ronda <%= round %>
+    </h2>
+
+    <div id={"accordion-teams-#{id}"} data-accordion="collapse">
+      <%= for %{next_round: team_round} = team <- teams do %>
+        <h2>
+          <button
+            type="button"
+            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+            phx-click={JS.push("expand", value: %{team_id: team.id})}
+          >
+            <div class="flex gap-8">
+              <span><%= team.name %></span> - <span><%= team_round.opponent_team %></span>
+            </div>
+            <div class="flex gap-8 justify-end">
+              <span>Convocados (<%= Enum.count(team_round.lineup) %>)</span>
+              <svg
+                data-accordion-icon
+                class="w-3 h-3 rotate-180 shrink-0"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 10 6"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5 5 1 1 5"
+                />
+              </svg>
+            </div>
+          </button>
+        </h2>
+        <div class={team.id != @expanded && "hidden"}>
+          <div class="max-w-3xl mx-auto relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" class="px-6 py-3 rounded-s-lg">
+                    No.
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    Nombre
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    <.icon class="h-5 w-5" name="svg-available" />
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    <.icon class="h-5 w-5" name="svg-unavailable" />
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    <.icon class="h-5 w-5" name="svg-unknown" />
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    <.icon class="h-5 w-5" name="svg-pending" />
+                  </th>
+                  <th scope="col" class="px-6 py-3 rounded-e-lg">
+                    Convocado
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  :for={
+                    %{
+                      id: id,
+                      team_player: %{player: %{name: name}, board_number: board_number},
+                      status: status
+                    } <- Enum.sort_by(team_round.players, & &1.team_player.board_number)
+                  }
+                  class="bg-white dark:bg-gray-800 border border-white/0 hover:border-gray-500/40"
+                >
+                  <th scope="row" class="text-center px-6 py-4">
+                    <%= board_number %>
+                  </th>
+                  <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <%= name %>
+                  </td>
+
+                  <td
+                    :for={col_status <- ["available", "unavailable", "unknown", "pending"]}
+                    class="text-center py-4 cursor-pointer hover:bg-sky-500/15"
+                    phx-click={
+                      JS.push("change_availability", value: %{status: col_status, id: id})
+                    }
+                  >
+                    <.icon
+                      class={(status == col_status && "h-6 w-6") || "h-4 w-4 filter grayscale"}
+                      name={"svg-#{col_status}"}
+                    />
+                  </td>
+                  <td
+                    class="text-center py-4 cursor-pointer hover:bg-sky-500/15"
+                    phx-click={
+                      JS.push("toggle_lineup", value: %{id: id, team_round_id: team_round.id})
+                    }
+                  >
+                    <%= if id in team_round.lineup do %>
+                      <.icon class="h-5 w-5" name="svg-true" />
+                    <% else %>
+                      <.icon class="h-3 w-3" name="svg-false" />
+                    <% end %>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

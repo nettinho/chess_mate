@@ -1,0 +1,46 @@
+<section class="w-full">
+  <form class="max-w-xl mx-auto" phx-submit="scrap">
+    <div class="mb-6">
+      <label
+        for="default-input"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >
+        <%= gettext("Enlace del torneo") %>
+      </label>
+      <input
+        name="tournment"
+        type="text"
+        id="default-input"
+        class={"""
+          bg-gray-50 border border-gray-300 
+          text-gray-900 text-sm rounded-lg 
+          focus:ring-blue-500 focus:border-blue-500 
+          block w-full p-2.5 dark:bg-gray-700 
+          dark:border-gray-600 dark:placeholder-gray-400 
+          dark:text-white dark:focus:ring-blue-500 
+          dark:focus:border-blue-500
+        """}
+      />
+    </div>
+    <button
+      type="submit"
+      class="w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+    >
+      Scrap
+    </button>
+  </form>
+
+  <div class={"""
+  flex flex-col gap-6
+  max-w-2xl mx-auto mt-5 pt-5 border-t dark:border-slate-600
+  """}>
+    <div :if={@step} class="w-full text-center text-lg dark:text-white">Step: <%= @step %></div>
+
+    <div :if={@tournment_name} class="w-full text-center text-3xl dark:text-white">
+      <%= @tournment_name %>
+    </div>
+    <div :if={@team_count} class="w-full text-center text-xl dark:text-white">
+      Team count: <%= @team_count %>
+    </div>
+  </div>
+</section>

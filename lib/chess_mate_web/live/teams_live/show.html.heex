@@ -1,0 +1,145 @@
+<div :if={is_nil(@team)} class="w-full text-center text-2xl text-gray-900 dark:text-white">
+  Cargando...
+</div>
+<div :if={@team}>
+  <.breadcrumb>
+    <.breadcrumb_link_item
+      link={~p"/tournments/#{@team.tournment_id}"}
+      text={@team.tournment.name}
+    />
+    <.breadcrumb_item text={@team.name} />
+  </.breadcrumb>
+  <section class="max-w-5xl mx-auto">
+    <%!-- <div class="mx-auto max-w-screen-2xl px-4 lg:px-12"> --%>
+    <h2 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+      <%= @team.name %>
+    </h2>
+
+    <div class="relative overflow-x-auto">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-3 rounded-s-lg">
+              No.
+            </th>
+            <th scope="col" class="px-6 py-3">
+              Título
+            </th>
+            <th scope="col" class="px-6 py-3">
+              Nombre
+            </th>
+            <th scope="col" class="px-6 py-3 rounded-e-lg">
+              ELO
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={
+              %{
+                player: %{name: name},
+                board_number: board_number,
+                title: title,
+                elo: elo
+              } <- @players
+            }
+            class="bg-white dark:bg-gray-800 border border-white/0 hover:border-gray-500/40"
+          >
+            <th scope="row" class="text-center px-6 py-4">
+              <%= board_number %>
+            </th>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <%= title %>
+            </td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <%= name %>
+            </td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <%= elo %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-12 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-4 py-3">
+                <span class="sr-only">Expand/Collapse Row</span>
+              </th>
+              <th scope="col" class="px-4 py-3">Ronda</th>
+              <th scope="col" class="px-4 py-3">Equipo</th>
+              <th scope="col" class="px-4 py-3"></th>
+              <th scope="col" class="px-4 py-3"></th>
+              <th scope="col" class="px-4 py-3"></th>
+              <th scope="col" class="px-4 py-3">Oponente</th>
+            </tr>
+          </thead>
+          <tbody data-accordion="table-column">
+            <%= for {round, games} <- @games do %>
+              <tr
+                class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+                id={"table-column-header-#{round.id}"}
+                data-accordion-target={"#table-column-body-#{round.id}"}
+                aria-expanded="false"
+                aria-controls={"table-column-body-#{round.id}"}
+              >
+                <td class="p-3 w-4">
+                  <svg
+                    data-accordion-icon=""
+                    class="w-6 h-6 shrink-0"
+                    fill="currentColor"
+                    viewbox="0 0 20 20"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </td>
+                <td class="px-4 py-3"><%= round.round %></td>
+                <td class="px-4 py-3 text-right"><%= @team.name %></td>
+                <td class="px-4 py-3 text-right"><%= round.team_points %></td>
+                <td class="px-4 py-3 text-center">
+                  <.icon class="h-4 w-4" name={"svg-#{round.round_win}"} />
+                </td>
+                <td class="px-4 py-3 text-left"><%= round.opponent_points %></td>
+                <td class="px-4 py-3  text-left"><%= round.opponent_name %></td>
+              </tr>
+              <tr
+                class="hidden flex-1"
+                id={"table-column-body-#{round.id}"}
+                aria-labelledby={"table-column-header-#{round.id}"}
+              >
+                <td colspan="7" class="pl-12">
+                  <table>
+                    <tbody data-accordion="table-column text-sm">
+                      <%= for %{team_player: team_player, opponent_player: opponent_player, win: win, table: table} <- games do %>
+                        <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700">
+                          <td class="px-4 py-3"><%= table %></td>
+                          <td class="px-4 py-3 text-right"><%= team_player.name %></td>
+                          <td class="px-4 py-3 text-center"><%= team_player.elo %></td>
+                          <td class="px-4 py-3 text-center">
+                            <.icon class="h-4 w-4" name={"svg-#{win}"} />
+                          </td>
+                          <td class="px-4 py-3 text-center"><%= opponent_player.elo %></td>
+                          <td class="px-4 py-3 text-left"><%= opponent_player.name %></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

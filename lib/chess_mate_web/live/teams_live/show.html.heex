@@ -11,24 +11,21 @@
   </.breadcrumb>
   <section class="max-w-5xl mx-auto">
     <%!-- <div class="mx-auto max-w-screen-2xl px-4 lg:px-12"> --%>
-    <h2 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+    <.header class="text-center mb-10">
       <%= @team.name %>
-    </h2>
+    </.header>
 
-    <div class="relative overflow-x-auto">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <div class="overflow-x-auto mb-10">
+      <table class="mx-auto text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" class="px-6 py-3 rounded-s-lg">
+            <th scope="col" class="px-6 py-3 rounded-s-lg text-center">
               No.
             </th>
-            <th scope="col" class="px-6 py-3">
-              Título
-            </th>
-            <th scope="col" class="px-6 py-3">
+            <th scope="col" class="px-6 py-3 text-left">
               Nombre
             </th>
-            <th scope="col" class="px-6 py-3 rounded-e-lg">
+            <th scope="col" class="px-6 py-3 rounded-e-lg text-center">
               ELO
             </th>
           </tr>
@@ -37,24 +34,23 @@
           <tr
             :for={
               %{
+                id: player_id,
                 player: %{name: name},
                 board_number: board_number,
                 title: title,
                 elo: elo
               } <- @players
             }
-            class="bg-white dark:bg-gray-800 border border-white/0 hover:border-gray-500/40"
+            class="border-b  dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+            phx-click={JS.navigate(~p"/teams/players/#{player_id}")}
           >
-            <th scope="row" class="text-center px-6 py-4">
+            <th scope="row" class="p-2 sm:px-6 sm:py-4 text-center">
               <%= board_number %>
             </th>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <%= title %>
+            <td class="p-2 sm:px-6 sm:py-4 text-xs sm:text-sm">
+              <b><%= title %></b> <%= name %>
             </td>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <%= name %>
-            </td>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <td class="p-2 sm:px-6 sm:py-4 text-center">
               <%= elo %>
             </td>
           </tr>
@@ -62,84 +58,127 @@
       </table>
     </div>
 
-    <div class="mt-12 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th scope="col" class="px-4 py-3">
-                <span class="sr-only">Expand/Collapse Row</span>
-              </th>
-              <th scope="col" class="px-4 py-3">Ronda</th>
-              <th scope="col" class="px-4 py-3">Equipo</th>
-              <th scope="col" class="px-4 py-3"></th>
-              <th scope="col" class="px-4 py-3"></th>
-              <th scope="col" class="px-4 py-3"></th>
-              <th scope="col" class="px-4 py-3">Oponente</th>
+    <div class="overflow-x-auto ">
+      <table class="mx-auto text-sm text-left rounded-t-lg text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
+        <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th scope="col" class="px-4 py-3 rounded-s-lg">
+              <span class="sr-only">Expand/Collapse Row</span>
+            </th>
+            <th scope="col" class="px-4 py-3 text-center">R.</th>
+            <th scope="col" class="px-4 py-3 text-right hidden sm:block">Equipo</th>
+            <th scope="col" class="px-4 py-3"></th>
+            <th scope="col" class="px-4 py-3"></th>
+            <th scope="col" class="px-4 py-3"></th>
+            <th scope="col" class="px-4 py-3 rounded-e-lg">Oponente</th>
+          </tr>
+        </thead>
+        <tbody data-accordion="table-column">
+          <%= for {round, games} <- @games do %>
+            <tr
+              class="border-b  dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+              id={"table-column-header-#{round.id}"}
+              data-accordion-target={"#table-column-body-#{round.id}"}
+              aria-expanded="false"
+              aria-controls={"table-column-body-#{round.id}"}
+            >
+              <td class="p-2 sm:px-4 sm:py-3">
+                <.icon data-accordion-icon="" name="hero-chevron-down" class="w-4 h-4 shrink-0" />
+              </td>
+              <td class="p-2 sm:px-4 sm:py-3 text-center"><%= round.round %></td>
+              <td class="p-2 sm:px-4 sm:py-3 text-right hidden sm:block"><%= @team.name %></td>
+              <td class="p-2 sm:px-4 sm:py-3 text-right"><%= round.team_points %></td>
+              <td
+                :if={round.team_points != 0 or round.opponent_points != 0}
+                class="p-2 sm:px-4 sm:py-3 text-center"
+              >
+                <.icon class="h-4 w-4" name={"svg-#{round.round_win}"} />
+              </td>
+              <td
+                :if={round.team_points == 0 and round.opponent_points == 0}
+                class="p-2 sm:px-4 sm:py-3 text-center"
+              >
+                -
+              </td>
+              <td class="p-2 sm:px-4 sm:py-3 text-left"><%= round.opponent_points %></td>
+              <td
+                :if={round.opponent_id}
+                class="p-2 sm:px-4 sm:py-3 text-left text-xs sm:text-sm"
+                phx-click={JS.navigate(~p"/teams/#{round.opponent_id}")}
+              >
+                <%= round.opponent_name %>
+              </td>
+              <td
+                :if={is_nil(round.opponent_id)}
+                class="p-2 sm:px-4 sm:py-3 text-left text-xs sm:text-sm "
+              >
+                Error.
+              </td>
             </tr>
-          </thead>
-          <tbody data-accordion="table-column">
-            <%= for {round, games} <- @games do %>
-              <tr
-                class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
-                id={"table-column-header-#{round.id}"}
-                data-accordion-target={"#table-column-body-#{round.id}"}
-                aria-expanded="false"
-                aria-controls={"table-column-body-#{round.id}"}
-              >
-                <td class="p-3 w-4">
-                  <svg
-                    data-accordion-icon=""
-                    class="w-6 h-6 shrink-0"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </td>
-                <td class="px-4 py-3"><%= round.round %></td>
-                <td class="px-4 py-3 text-right"><%= @team.name %></td>
-                <td class="px-4 py-3 text-right"><%= round.team_points %></td>
-                <td class="px-4 py-3 text-center">
-                  <.icon class="h-4 w-4" name={"svg-#{round.round_win}"} />
-                </td>
-                <td class="px-4 py-3 text-left"><%= round.opponent_points %></td>
-                <td class="px-4 py-3  text-left"><%= round.opponent_name %></td>
-              </tr>
-              <tr
-                class="hidden flex-1"
-                id={"table-column-body-#{round.id}"}
-                aria-labelledby={"table-column-header-#{round.id}"}
-              >
-                <td colspan="7" class="pl-12">
-                  <table>
-                    <tbody data-accordion="table-column text-sm">
-                      <%= for %{team_player: team_player, opponent_player: opponent_player, win: win, table: table} <- games do %>
-                        <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700">
-                          <td class="px-4 py-3"><%= table %></td>
-                          <td class="px-4 py-3 text-right"><%= team_player.name %></td>
-                          <td class="px-4 py-3 text-center"><%= team_player.elo %></td>
-                          <td class="px-4 py-3 text-center">
-                            <.icon class="h-4 w-4" name={"svg-#{win}"} />
-                          </td>
-                          <td class="px-4 py-3 text-center"><%= opponent_player.elo %></td>
-                          <td class="px-4 py-3 text-left"><%= opponent_player.name %></td>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            <tr
+              class="hidden flex-1"
+              id={"table-column-body-#{round.id}"}
+              aria-labelledby={"table-column-header-#{round.id}"}
+            >
+              <td colspan="7" class="hidden sm:table-cell pl-12">
+                <table>
+                  <tbody data-accordion="table-column text-xs">
+                    <%= for %{team_player: team_player, opponent_player: opponent_player, win: win, table: table} <- games do %>
+                      <tr class="border-b dark:border-gray-700">
+                        <td class="px-4 sm:py-3"><%= table %></td>
+                        <td
+                          class="px-4 sm:py-3 text-right hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                          phx-click={JS.navigate(~p"/teams/players/#{team_player.id}")}
+                        >
+                          <%= team_player.name %>
+                        </td>
+                        <td class="px-4 sm:py-3 text-center"><%= team_player.elo %></td>
+                        <td class="px-4 sm:py-3 text-center">
+                          <.icon class="h-4 w-4" name={"svg-#{win}"} />
+                        </td>
+                        <td class="px-4 sm:py-3 text-center">
+                          <%= opponent_player.elo %>
+                        </td>
+                        <td
+                          class="px-4 sm:py-3 text-left hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                          phx-click={JS.navigate(~p"/teams/players/#{opponent_player.id}")}
+                        >
+                          <%= opponent_player.name %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </td>
+              <td colspan="7" class="sm:hidden">
+                <table class="w-full bg-zinc-50 dark:bg-zinc-800">
+                  <tbody data-accordion="table-column text-xs">
+                    <%= for %{team_player: team_player, opponent_player: opponent_player, win: win, table: table} <- games do %>
+                      <tr>
+                        <td class="p-2" rowspan="3"><%= table %></td>
+                        <td class="p-2 text-left">
+                          (<%= team_player.elo %>) <%= team_player.name %>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="text-center">
+                          <.icon class="h-4 w-4" name={"svg-#{win}"} />
+                        </td>
+                      </tr>
+                      <tr class="border-b dark:border-gray-700">
+                        <td class="p-2 text-right">
+                          (<%= opponent_player.elo %>) <%= opponent_player.name %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </section>
 </div>

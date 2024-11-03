@@ -146,6 +146,14 @@ defmodule ChessMate.Playbook do
               tr.team_id,
               visitor_team.name,
               local_team.name
+            ),
+          opponent_team_id:
+            fragment(
+              "CASE WHEN ? = ? THEN ? ELSE ? END",
+              local_team.id,
+              tr.team_id,
+              visitor_team.id,
+              local_team.id
             )
       },
       distinct: tr.id

@@ -1,0 +1,76 @@
+<div :if={is_nil(@player)} class="w-full text-center text-2xl text-gray-900 dark:text-white">
+  Cargando...
+</div>
+<div :if={@player}>
+  <.breadcrumb>
+    <.breadcrumb_link_item
+      link={~p"/tournments/#{@player.team.tournment_id}"}
+      text={@player.team.tournment.name}
+    />
+    <.breadcrumb_link_item link={~p"/teams/#{@player.team_id}"} text={@player.team.name} />
+    <.breadcrumb_item text={@player.player.name} />
+  </.breadcrumb>
+  <section class="max-w-5xl mx-auto">
+    <%!-- <div class="mx-auto max-w-screen-2xl px-4 lg:px-12"> --%>
+    <.header class="text-center mb-10">
+      <%= @player.player.name %>
+
+      <:subtitle>
+        <%= @player.elo %>
+      </:subtitle>
+    </.header>
+
+    <div class="overflow-x-auto mb-10">
+      <table class="mx-auto text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th class="px-6 py-3 rounded-s-lg text-center">
+              R.
+            </th>
+            <th></th>
+            <th class="px-6 py-3  text-center"></th>
+            <th class="px-6 py-3 text-left rounded-e-lg">
+              Oponente
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={
+              %{
+                round: %{round: round},
+                opponent_player: %{
+                  title: opponent_title,
+                  name: opponent_name,
+                  id: opponent_id,
+                  elo: opponent_elo
+                },
+                opponent_team: {opponent_team_id, opponent_team_name},
+                win: win
+              } <- @games
+            }
+            class="border-b  dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+            phx-click={JS.navigate(~p"/teams/players/#{opponent_id}")}
+          >
+            <th scope="row" class="p-2 sm:px-6 sm:py-4 text-center">
+              <%= round %>
+            </th>
+            <th scope="row" class="p-2 sm:px-6 sm:py-4 text-center">
+              <.icon class="h-4 w-4" name={"svg-#{win}"} />
+            </th>
+            <td class="p-2 sm:px-6 sm:py-4 text-center">
+              <%= opponent_elo %>
+            </td>
+            <td class="p-2 sm:px-6 sm:py-4 text-xs sm:text-sm">
+              <div class="flex flex-col">
+                <span><b><%= opponent_title %></b> <%= opponent_name %></span>
+
+                <%= opponent_team_name %>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

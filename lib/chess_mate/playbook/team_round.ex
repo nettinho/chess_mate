@@ -16,6 +16,7 @@ defmodule ChessMate.Playbook.TeamRound do
     has_many :players, PlayerAvailability
 
     field :opponent_team, :string, virtual: true
+    field :opponent_tea_id, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
   end

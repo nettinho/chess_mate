@@ -396,7 +396,13 @@ defmodule ChessMate.Roster do
       ** (Ecto.NoResultsError)
 
   """
-  def get_player_team!(id), do: Repo.get!(PlayerTeam, id)
+  def get_player_team!(id, opts \\ []) do
+    preload = Keyword.get(opts, :preload, [])
+
+    PlayerTeam
+    |> preload(^preload)
+    |> Repo.get!(id)
+  end
 
   def get_player_team_by(attrs), do: Repo.get_by(PlayerTeam, attrs)
 
@@ -770,4 +776,49 @@ defmodule ChessMate.Roster do
     )
     |> Repo.all()
   end
+
+  defp parse_player(%{id: id, player: %{name: name}, elo: elo, title: title}),
+    do: %{id: id, name: name, elo: elo, title: title}
+
+  defp parse_player(_), do: %{name: nil, elo: nil, title: nil}
+
+  defp player_team(%{team: %{name: team_name, id: id}}), do: {id, team_name}
+  defp player_team(_), do: nil
+
+  defp result_to_win(_, "draw"), do: "draw"
+  defp result_to_win(win, win), do: "win"
+  defp result_to_win(_, nil), do: nil
+  defp result_to_win(_, _), do: "lose"
+
+  def parse_game_as_local(%{
+        table: table,
+        round: round,
+        result: result,
+        local: local,
+        visitor: visitor
+      }),
+      do: %{
+        table: table,
+        round: round,
+        team_player: parse_player(local),
+        opponent_player: parse_player(visitor),
+        opponent_team: player_team(visitor),
+        win: result_to_win("local", result)
+      }
+
+  def parse_game_as_visitor(%{
+        table: table,
+        round: round,
+        result: result,
+        local: local,
+        visitor: visitor
+      }),
+      do: %{
+        table: table,
+        round: round,
+        team_player: parse_player(visitor),
+        opponent_player: parse_player(local),
+        opponent_team: player_team(local),
+        win: result_to_win("visitor", result)
+      }
 end

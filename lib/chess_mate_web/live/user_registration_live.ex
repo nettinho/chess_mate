@@ -8,13 +8,14 @@ defmodule ChessMateWeb.UserRegistrationLive do
     ~H"""
     <div class="mx-auto max-w-sm">
       <.header class="text-center mb-10">
-        Register for an account
+        <%= gettext("Crear una cuenta") %>
         <:subtitle>
-          Already registered?
+          <%= gettext("¿Ya tienes una cuenta?") %>
           <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
-            Log in
+            <%= gettext("Inicia sesión") %>
           </.link>
-          to your account now.
+
+          <%= gettext("para continuar.") %>
         </:subtitle>
       </.header>
 
@@ -28,14 +29,16 @@ defmodule ChessMateWeb.UserRegistrationLive do
         method="post"
       >
         <.error :if={@check_errors}>
-          Oops, something went wrong! Please check the errors below.
+          <%= gettext("Ups, algo ha ido mal. Verifica los errores abajo.") %>
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
+        <.input field={@form[:email]} type="email" label={gettext("Correo electrónico")} required />
+        <.input field={@form[:password]} type="password" label={gettext("Contraseña")} required />
 
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.button phx-disable-with="Creating account..." class="w-full">
+            <%= gettext("Crear una cuenta") %>
+          </.button>
         </:actions>
       </.simple_form>
     </div>

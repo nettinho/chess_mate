@@ -1,7 +1,8 @@
 <section class="max-w-xl mx-auto">
-  <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+  <.header class="text-center mb-10">
     <%= gettext("Torneos") %>
-  </h2>
+  </.header>
+
   <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
     <li
       :for={%{id: id, name: name} <- @tournments}

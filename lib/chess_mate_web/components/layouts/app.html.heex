@@ -1,55 +1,83 @@
-<nav
-  id="toggleMobileMenu"
-  class="bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-800"
+<aside
+  class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+  aria-label="Sidenav"
+  id="drawer-navigation"
 >
-  <div class="px-4 py-2">
-    <div class="flex items-center">
-      <ul class="flex items-center text-sm text-gray-600 font-medium">
-        <li class="block lg:inline">
-          <.link
-            navigate={~p"/tournments"}
-            class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
-          >
-            <%= gettext("Torneos") %>
-          </.link>
-        </li>
-        <li :if={@current_user && not Enum.empty?(@current_user.roles)} class="block lg:inline">
-          <.link
-            navigate={~p"/playbook/next"}
-            class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
-          >
-            <%= gettext("Próxima Ronda") %>
-          </.link>
-        </li>
-        <li :if={@current_user && @current_user.is_admin} class="block lg:inline">
-          <.link
-            navigate={~p"/scrap"}
-            class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
-          >
-            Scrap
-          </.link>
-        </li>
-        <li :if={@current_user && @current_user.is_admin} class="block lg:inline">
-          <.link
-            navigate={~p"/users"}
-            class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
-          >
-            Users
-          </.link>
-        </li>
-        <li :if={@current_user && @current_user.is_admin} class="block lg:inline">
-          <.link
-            navigate={~p"/user_roles"}
-            class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
-          >
-            User roles
-          </.link>
-        </li>
-      </ul>
-    </div>
+  <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
+    <ul class="space-y-2">
+      <li>
+        <.link
+          navigate={~p"/tournments"}
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        >
+          <.icon
+            name="hero-trophy"
+            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+          />
+
+          <span class="ml-3"><%= gettext("Torneos") %></span>
+        </.link>
+      </li>
+
+      <li :if={@current_user && not Enum.empty?(@current_user.roles)}>
+        <.link
+          navigate={~p"/playbook/next"}
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        >
+          <.icon
+            name="hero-trophy"
+            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+          />
+
+          <span class="ml-3"><%= gettext("Próxima Ronda") %></span>
+        </.link>
+      </li>
+
+      <li :if={@current_user && @current_user.is_admin}>
+        <.link
+          navigate={~p"/scrap"}
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        >
+          <.icon
+            name="hero-ticket"
+            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+          />
+
+          <span class="ml-3"><%= gettext("Scrap") %></span>
+        </.link>
+      </li>
+
+      <li :if={@current_user && @current_user.is_admin}>
+        <.link
+          navigate={~p"/users"}
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        >
+          <.icon
+            name="hero-users"
+            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+          />
+
+          <span class="ml-3"><%= gettext("Users") %></span>
+        </.link>
+      </li>
+
+      <li :if={@current_user && @current_user.is_admin}>
+        <.link
+          navigate={~p"/user_roles"}
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        >
+          <.icon
+            name="hero-shield-check"
+            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+          />
+
+          <span class="ml-3"><%= gettext("Roles") %></span>
+        </.link>
+      </li>
+    </ul>
   </div>
-</nav>
-<main class="flex-1 p-4 space-y-4">
+</aside>
+<main class="flex-1 p-2">
   <.flash_group flash={@flash} />
   <%= @inner_content %>
 </main>

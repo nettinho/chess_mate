@@ -559,7 +559,7 @@ defmodule ChessMateWeb.CoreComponents do
   def breadcrumb(assigns) do
     ~H"""
     <nav class="flex mb-4" aria-label="Breadcrumb">
-      <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <ol class="flex flex-col sm:flex-row sm:items-center space-x-1 md:space-x-2 ">
         <li class="inline-flex items-center">
           <.link
             navigate="/"
@@ -589,7 +589,7 @@ defmodule ChessMateWeb.CoreComponents do
   def breadcrumb_link_item(assigns) do
     ~H"""
     <li>
-      <div class="flex items-center">
+      <div class="flex items-center ">
         <svg
           class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1"
           aria-hidden="true"

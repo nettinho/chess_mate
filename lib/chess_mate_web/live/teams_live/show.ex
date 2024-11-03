@@ -20,77 +20,29 @@ defmodule ChessMateWeb.TeamsLive.Show do
         ]
       )
 
-    parse_player = fn
-      %{
-        player: %{name: name},
-        elo: elo,
-        title: title
-      } ->
-        %{name: name, elo: elo, title: title}
-
-      nil ->
-        %{name: nil, elo: nil, title: nil}
-    end
-
-    player_team = fn
-      %{team: %{name: team_name}} -> team_name
-      _ -> nil
-    end
-
-    result_to_win = fn
-      _, "draw" -> "draw"
-      win, win -> "win"
-      _, nil -> nil
-      _, _ -> "lose"
-    end
-
     games_as_local =
       team.players
       |> Enum.flat_map(& &1.games_as_local)
-      |> Enum.map(fn
-        %{
-          table: table,
-          round: round,
-          result: result,
-          local: local,
-          visitor: visitor
-        } ->
-          %{
-            table: table,
-            round: round,
-            team_player: parse_player.(local),
-            opponent_player: parse_player.(visitor),
-            opponent_team: player_team.(visitor),
-            win: result_to_win.("local", result)
-          }
-      end)
+      |> Enum.map(&Roster.parse_game_as_local/1)
 
     games_as_visitor =
       team.players
       |> Enum.flat_map(& &1.games_as_visitor)
-      |> Enum.map(fn %{
-                       table: table,
-                       round: round,
-                       result: result,
-                       local: local,
-                       visitor: visitor
-                     } ->
-        %{
-          table: table,
-          round: round,
-          team_player: parse_player.(visitor),
-          opponent_player: parse_player.(local),
-          opponent_team: player_team.(local),
-          win: result_to_win.("visitor", result)
-        }
-      end)
+      |> Enum.map(&Roster.parse_game_as_visitor/1)
 
     games =
       (games_as_local ++ games_as_visitor)
       |> Enum.group_by(& &1.round)
       |> Enum.sort_by(fn {%{round: round}, _} -> round end)
       |> Enum.map(fn {round, games} ->
-        %{opponent_team: opponent_name} = List.first(games)
+        {opponent_id, opponent_name} =
+          games
+          |> Enum.sort_by(& &1.table)
+          |> List.first()
+          |> case do
+            %{opponent_team: {opponent_id, opponent_name}} -> {opponent_id, opponent_name}
+            _ -> {nil, nil}
+          end
 
         {opponent_points, team_points} =
           games
@@ -122,6 +74,7 @@ defmodule ChessMateWeb.TeamsLive.Show do
            round: round.round,
            timestamp: round.timestamp,
            opponent_name: opponent_name,
+           opponent_id: opponent_id,
            opponent_points: opponent_points,
            team_points: team_points,
            round_win: round_win.(team_points, opponent_points)

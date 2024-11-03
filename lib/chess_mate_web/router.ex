@@ -93,6 +93,8 @@ defmodule ChessMateWeb.Router do
       live "/tournments/:id", TournmentsLive.Show
 
       live "/teams/:id", TeamsLive.Show
+
+      live "/teams/players/:id", TeamsLive.Player
     end
   end
 end

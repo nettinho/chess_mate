@@ -2,7 +2,6 @@ defmodule ChessMateWeb.UserLive.Index do
   use ChessMateWeb, :live_view
 
   alias ChessMate.Accounts
-  alias ChessMate.Accounts.User
 
   @impl true
   def mount(_params, _session, socket) do
@@ -29,13 +28,5 @@ defmodule ChessMateWeb.UserLive.Index do
   @impl true
   def handle_info({ChessMateWeb.UserLive.FormComponent, {:saved, user}}, socket) do
     {:noreply, stream_insert(socket, :users, user)}
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    user = Accounts.get_user!(id)
-    {:ok, _} = Accounts.delete_user(user)
-
-    {:noreply, stream_delete(socket, :users, user)}
   end
 end

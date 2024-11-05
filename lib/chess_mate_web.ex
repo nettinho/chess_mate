@@ -85,6 +85,7 @@ defmodule ChessMateWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import ChessMateWeb.CoreComponents
+      import ChessMateWeb.FlopComponents
       import ChessMateWeb.Gettext
 
       # Shortcut for generating JS commands

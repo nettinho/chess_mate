@@ -11,23 +11,94 @@
   </.breadcrumb>
   <section class="max-w-5xl mx-auto">
     <%!-- <div class="mx-auto max-w-screen-2xl px-4 lg:px-12"> --%>
-    <.header class="text-center mb-10">
+    <.header class="text-center mb-8">
       <%= @team.name %>
     </.header>
+
+    <div class="mb-8 max-w-md mx-auto rounded-lg border border-gray-100 bg-gray-50 p-2 sm:p-4 dark:border-gray-700 dark:bg-gray-800">
+      <div class="divide-y divide-gray-200 dark:divide-gray-700 dark:border-gray-800">
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Vitoria / Derrota / Empate") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <span class="font-bold text-green-500 dark:text-green-700"><%= @victory %></span>
+            / <span class="font-bold text-red-500 dark:text-red-700"><%= @loss %></span>
+            / <span class="font-bold text-yellow-500 dark:text-yellow-700"><%= @draw %></span>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Posición actual") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <.rank_icon team={@team} /><%= @team.current_rank %>
+          </dd>
+        </dl>
+
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Posición inicial") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @team.initial_rank %>
+          </dd>
+        </dl>
+
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Puntos") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @team.points %>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Número de jugadores") %>
+          </dt>
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @player_count %>
+          </dd>
+        </dl>
+
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("ELO Promedio") %>
+          </dt>
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @team.average_elo %>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Edad Promedio") %>
+          </dt>
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @average_age %>
+          </dd>
+        </dl>
+      </div>
+    </div>
 
     <div class="overflow-x-auto mb-10">
       <table class="mx-auto text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" class="px-6 py-3 rounded-s-lg text-center">
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 rounded-s-lg text-center">
               No.
             </th>
-            <th scope="col" class="px-6 py-3 text-left">
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 text-left">
               Nombre
             </th>
-            <th scope="col" class="px-6 py-3 rounded-e-lg text-center">
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 text-center">
               ELO
             </th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 rounded-e-lg text-center">Edad</th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +106,7 @@
             :for={
               %{
                 id: player_id,
-                player: %{name: name},
+                player: %{name: name, birth_year: birth_year},
                 board_number: board_number,
                 title: title,
                 elo: elo
@@ -44,14 +115,17 @@
             class="border-b  dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
             phx-click={JS.navigate(~p"/teams/players/#{player_id}")}
           >
-            <th scope="row" class="p-2 sm:px-6 sm:py-4 text-center">
+            <th scope="row" class="py-2 sm:px-6 sm:py-4 text-center">
               <%= board_number %>
             </th>
-            <td class="p-2 sm:px-6 sm:py-4 text-xs sm:text-sm">
+            <td class="sm:px-6 sm:py-4 text-xs sm:text-sm">
               <b><%= title %></b> <%= name %>
             </td>
-            <td class="p-2 sm:px-6 sm:py-4 text-center">
+            <td class="py-2 sm:px-6 sm:py-4 text-xs sm:text-sm text-center">
               <%= elo %>
+            </td>
+            <td class="py-2 sm:px-6 sm:py-4 text-xs sm:text-sm text-center">
+              <%= @current_year - birth_year %>
             </td>
           </tr>
         </tbody>
@@ -62,18 +136,20 @@
       <table class="mx-auto text-sm text-left rounded-t-lg text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
         <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th scope="col" class="px-4 py-3 rounded-s-lg">
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 rounded-s-lg">
               <span class="sr-only">Expand/Collapse Row</span>
             </th>
-            <th scope="col" class="px-4 py-3 text-center">R.</th>
-            <th scope="col" class="px-4 py-3 text-right hidden sm:block">Equipo</th>
-            <th scope="col" class="px-4 py-3"></th>
-            <th scope="col" class="px-4 py-3"></th>
-            <th scope="col" class="px-4 py-3"></th>
-            <th scope="col" class="px-4 py-3 rounded-e-lg">Oponente</th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 text-center">R.</th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 text-right hidden sm:block">
+              Equipo
+            </th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3"></th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3"></th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3"></th>
+            <th scope="col" class="py-3 px-4 sm:px-6 sm:py-3 rounded-e-lg">Oponente</th>
           </tr>
         </thead>
-        <tbody data-accordion="table-column">
+        <tbody id="round-table" data-accordion="table-column">
           <%= for {round, games} <- @games do %>
             <tr
               class="border-b  dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
@@ -83,7 +159,7 @@
               aria-controls={"table-column-body-#{round.id}"}
             >
               <td class="p-2 sm:px-4 sm:py-3">
-                <.icon data-accordion-icon="" name="hero-chevron-down" class="w-4 h-4 shrink-0" />
+                <.icon data_accordion_icon="" name="hero-chevron-up" class="w-4 h-4 shrink-0" />
               </td>
               <td class="p-2 sm:px-4 sm:py-3 text-center"><%= round.round %></td>
               <td class="p-2 sm:px-4 sm:py-3 text-right hidden sm:block"><%= @team.name %></td>
@@ -140,6 +216,7 @@
                           <%= opponent_player.elo %>
                         </td>
                         <td
+                          :if={opponent_player.name}
                           class="px-4 sm:py-3 text-left hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                           phx-click={JS.navigate(~p"/teams/players/#{opponent_player.id}")}
                         >
@@ -156,7 +233,10 @@
                     <%= for %{team_player: team_player, opponent_player: opponent_player, win: win, table: table} <- games do %>
                       <tr>
                         <td class="p-2" rowspan="3"><%= table %></td>
-                        <td class="p-2 text-left">
+                        <td
+                          class="p-2 text-left"
+                          phx-click={JS.navigate(~p"/teams/players/#{team_player.id}")}
+                        >
                           (<%= team_player.elo %>) <%= team_player.name %>
                         </td>
                       </tr>
@@ -167,7 +247,11 @@
                         </td>
                       </tr>
                       <tr class="border-b dark:border-gray-700">
-                        <td class="p-2 text-right">
+                        <td
+                          :if={opponent_player.name}
+                          class="p-2 text-right"
+                          phx-click={JS.navigate(~p"/teams/players/#{opponent_player.id}")}
+                        >
                           (<%= opponent_player.elo %>) <%= opponent_player.name %>
                         </td>
                       </tr>

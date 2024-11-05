@@ -26,6 +26,22 @@ defmodule ChessMateWeb.TeamsLive.Player do
       |> Enum.reject(&is_nil(&1.win))
       |> Enum.sort_by(& &1.round.round)
 
-    {:noreply, assign(socket, player: player, games: games)}
+    {victory, loss, draw} =
+      Enum.reduce(games, {0, 0, 0}, fn
+        %{win: "win"}, {victory, loss, draw} -> {victory + 1, loss, draw}
+        %{win: "lose"}, {victory, loss, draw} -> {victory, loss + 1, draw}
+        %{win: "draw"}, {victory, loss, draw} -> {victory, loss, draw + 1}
+        _, {victory, loss, draw} -> {victory, loss, draw}
+      end)
+
+    {:noreply,
+     assign(socket,
+       player: player,
+       games: games,
+       victory: victory,
+       loss: loss,
+       draw: draw,
+       current_year: Date.utc_today().year
+     )}
   end
 end

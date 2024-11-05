@@ -37,6 +37,19 @@ defmodule ChessMate.Scrap do
     {%{code: tournment, name: name, when: date, rate: rate}, teams}
   end
 
+  def fetch_teams_standings(tournment_code) do
+    "#{@base_url}/team/#{tournment_code}/standings"
+    |> Req.get!()
+    |> Map.get(:body)
+    |> Floki.parse_document!()
+    |> Floki.find("tbody")
+    |> case do
+      [{"tbody", _, table} | _] -> table
+      _ -> []
+    end
+    |> Enum.into(%{}, &parse_team_standing_row/1)
+  end
+
   def fetch_team(tournment_code, team_code) do
     "#{@base_url}/team/#{tournment_code}/#{team_code}"
     |> Req.get!()
@@ -77,6 +90,28 @@ defmodule ChessMate.Scrap do
     |> elem(0)
   end
 
+  def fetch_player_details(fide_id) do
+    "https://ratings.fide.com/profile/#{fide_id}"
+    |> Req.get!()
+    |> Map.get(:body)
+    |> Floki.parse_document!()
+    |> Floki.find(".profile-top-info__block__row__data")
+    |> then(fn [_, country, _, birth_year, gender | _] ->
+      %{
+        country: Floki.text(country),
+        birth_year:
+          birth_year
+          |> Floki.text()
+          |> Integer.parse()
+          |> case do
+            {birth_year, ""} -> birth_year
+            :error -> 0
+          end,
+        gender: Floki.text(gender)
+      }
+    end)
+  end
+
   defp parse_team_row(row) do
     row
     |> Floki.find(".teamname")
@@ -93,6 +128,58 @@ defmodule ChessMate.Scrap do
         code = link |> String.split("/") |> Enum.at(3)
         %{name: String.trim(name), code: code}
     end
+  end
+
+  defp parse_team_standing_row(
+         {"tr", _, [current_rank, initial_rank, link, _, points, _, average_elo | _]}
+       ) do
+    initial_rank =
+      initial_rank
+      |> Floki.text()
+      |> String.trim()
+      |> String.to_integer()
+
+    current_rank =
+      current_rank
+      |> Floki.text()
+      |> String.trim()
+      |> String.to_integer()
+
+    points =
+      points
+      |> Floki.text()
+      |> String.trim()
+      |> String.to_float()
+
+    average_elo =
+      average_elo
+      |> Floki.text()
+      |> String.trim()
+      |> Integer.parse()
+      |> case do
+        {elo, ""} -> elo
+        :error -> 0
+      end
+
+    code =
+      link
+      |> case do
+        {_, _, [{_, [{_, link}], _}]} ->
+          code =
+            link
+            |> String.split("/")
+            |> Enum.at(3)
+
+          code
+      end
+
+    {code,
+     %{
+       initial_rank: initial_rank,
+       current_rank: current_rank,
+       points: points,
+       average_elo: average_elo
+     }}
   end
 
   defp parse_player_row(row) do

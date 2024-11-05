@@ -46,7 +46,7 @@ defmodule ChessMateWeb.PlaybookLive.NextRound do
         [player_id | lineup]
       end
 
-    {:ok, team_round} =
+    {:ok, _team_round} =
       Playbook.update_team_round(team_round, %{lineup: lineup},
         preload: [:round, team: [players: [:player]]]
       )

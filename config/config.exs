@@ -22,6 +22,14 @@ config :chess_mate, ChessMateWeb.Endpoint,
   pubsub_server: ChessMate.PubSub,
   live_view: [signing_salt: "LlSDF+qF"]
 
+config :flop,
+  repo: ChessMate.Repo,
+  default_order: %{
+    order_by: [:inserted_at],
+    order_directions: [:desc]
+  },
+  default_limit: 20
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

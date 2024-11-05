@@ -13,12 +13,94 @@
   <section class="max-w-5xl mx-auto">
     <%!-- <div class="mx-auto max-w-screen-2xl px-4 lg:px-12"> --%>
     <.header class="text-center mb-10">
-      <%= @player.player.name %>
-
-      <:subtitle>
-        <%= @player.elo %>
-      </:subtitle>
+      <b><%= @player.title %></b> <%= @player.player.name %>
     </.header>
+
+    <div class="mb-8 max-w-md mx-auto rounded-lg border border-gray-100 bg-gray-50 p-2 sm:p-4 dark:border-gray-700 dark:bg-gray-800">
+      <div class="divide-y divide-gray-200 dark:divide-gray-700 dark:border-gray-800">
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Vitoria / Derrota / Empate") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <span class="font-bold text-green-500 dark:text-green-700"><%= @victory %></span>
+            / <span class="font-bold text-red-500 dark:text-red-700"><%= @loss %></span>
+            / <span class="font-bold text-yellow-500 dark:text-yellow-700"><%= @draw %></span>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("ELO") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @player.elo %>
+          </dd>
+        </dl>
+        
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Edad") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @current_year - @player.player.birth_year %>
+          </dd>
+        </dl>
+        
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Año de nacimiento") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @player.player.birth_year %>
+          </dd>
+        </dl>
+        
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Género") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <%= @player.player.gender %>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("ID FIDE") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <.link
+              class="underline hover:text-blue-600 flex items-center"
+              href={"https://ratings.fide.com/profile/#{@player.player.fide}" }
+              target="_blank"
+            >
+              <%= @player.player.fide %>
+              <.icon class="ml-1 h-4 w-4" name="hero-arrow-top-right-on-square" />
+            </.link>
+          </dd>
+        </dl>
+        <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
+          <dt class="text-sm font-medium text-gray-900 dark:text-white">
+            <%= gettext("Yotta chess link") %>
+          </dt>
+
+          <dd class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <.link
+              class="underline hover:text-blue-600 flex items-center"
+              href={"https://www.yottachess.com/player/#{@player.player.fide}" }
+              target="_blank"
+            >
+              Ir a YottaChess <.icon class="ml-1 h-4 w-4" name="hero-arrow-top-right-on-square" />
+            </.link>
+          </dd>
+        </dl>
+      </div>
+    </div>
 
     <div class="overflow-x-auto mb-10">
       <table class="mx-auto text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">

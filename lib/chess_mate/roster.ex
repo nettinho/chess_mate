@@ -4,7 +4,6 @@ defmodule ChessMate.Roster do
   """
 
   import Ecto.Query, warn: false
-  alias ChessMate.Playbook.TeamRound
   alias ChessMate.Repo
 
   alias ChessMate.Roster.Player
@@ -148,11 +147,13 @@ defmodule ChessMate.Roster do
       ** (Ecto.NoResultsError)
 
   """
-  def get_tournment!(id),
-    do:
-      Tournment
-      |> preload([:teams, :rounds])
-      |> Repo.get!(id)
+  def get_tournment!(id, opts \\ []) do
+    preload = Keyword.get(opts, :preload, [])
+
+    Tournment
+    |> preload(^preload)
+    |> Repo.get!(id)
+  end
 
   @doc """
   Creates a tournment.
@@ -254,6 +255,19 @@ defmodule ChessMate.Roster do
     prefixes
     |> Enum.reduce(Team, &or_where(&2, [t], ilike(t.name, ^"#{&1}%")))
     |> Repo.all()
+  end
+
+  def team_query(opts \\ []) do
+    base_query = from(Team, as: :team)
+
+    opts
+    |> Enum.reduce(base_query, fn
+      {:tournment_id, id}, q ->
+        where(q, [t], t.tournment_id == ^id)
+
+      {:preload, preload}, q ->
+        preload(q, ^preload)
+    end)
   end
 
   @doc """

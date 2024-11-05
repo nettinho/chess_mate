@@ -40,11 +40,15 @@ defmodule ChessMateWeb.ScrapLive.Index do
   end
 
   def handle_info({:fetch_teams, tournment_id, teams}, socket) do
+    %{tournment_code: tournment_code} = socket.assigns
+    standings = Scrap.fetch_teams_standings(tournment_code)
+
     teams =
       Enum.map(
         teams,
         &(&1
           |> Map.put(:tournment_id, tournment_id)
+          |> Map.merge(Map.get(standings, &1.code))
           |> Roster.put_team()
           |> elem(1))
       )
@@ -67,8 +71,13 @@ defmodule ChessMateWeb.ScrapLive.Index do
 
     tournment_code
     |> Scrap.fetch_team(code)
-    |> Enum.each(fn player ->
-      {:ok, %{id: player_id}} = Roster.put_player(player)
+    |> Enum.each(fn %{fide: fide} = player ->
+      details = Scrap.fetch_player_details(fide)
+
+      {:ok, %{id: player_id}} =
+        player
+        |> Map.merge(details)
+        |> Roster.put_player()
 
       player
       |> Map.put(:player_id, player_id)

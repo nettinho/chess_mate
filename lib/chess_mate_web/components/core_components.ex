@@ -687,10 +687,11 @@ defmodule ChessMateWeb.CoreComponents do
   """
   attr :name, :string, required: true
   attr :class, :string, default: nil
+  attr :data_accordion_icon, :string, default: nil
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} data-accordion-icon={@data_accordion_icon} />
     """
   end
 
@@ -698,7 +699,11 @@ defmodule ChessMateWeb.CoreComponents do
     assigns = assign(assigns, :file, file)
 
     ~H"""
-    <img src={"/images/#{@file}.svg"} class={["inline", @class]} />
+    <img
+      src={"/images/#{@file}.svg"}
+      class={["inline", @class]}
+      data-accordion-icon={@data_accordion_icon}
+    />
     """
   end
 

@@ -11,37 +11,36 @@
     <span><%= @tournment.rate %></span>
   </div>
 
-  <form class="max-w-xl mx-auto" phx-change="filter">
-    <div class="mb-6">
-      <label
-        for="default-input"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        <%= gettext("Buscar equipo") %>
-      </label>
-      <input
-        name="team"
-        type="text"
-        id="default-input"
-        class={"""
-          bg-gray-50 border border-gray-300 
-          text-gray-900 text-sm rounded-lg 
-          focus:ring-blue-500 focus:border-blue-500 
-          block w-full p-2.5 dark:bg-gray-700 
-          dark:border-gray-600 dark:placeholder-gray-400 
-          dark:text-white dark:focus:ring-blue-500 
-          dark:focus:border-blue-500
-        """}
-      />
-    </div>
-  </form>
-  <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-    <li
-      :for={%{id: id, name: name} <- @teams}
-      class="hover:underline cursor-pointer"
-      phx-click={JS.navigate(~p"/teams/#{id}")}
+  <div class="py-8">
+    <.flop_table
+      search_label={gettext("Buscar equipo")}
+      id="teams_table"
+      rows={@items}
+      flop={@flop_meta}
+      row_click={fn %{id: id} -> JS.navigate(~p"/teams/#{id}") end}
     >
-      <%= name %>
-    </li>
-  </ul>
+      <:col :let={team} label={gettext("#")} sort={:current_rank} align={:center}>
+        <.rank_icon team={team} />
+        <%= team.current_rank %>
+      </:col>
+      <:col :let={team} label={gettext("Ini.")} sort={:initial_rank} align={:center}>
+        <%= team.initial_rank %>
+      </:col>
+      <:col
+        :let={team}
+        label={gettext("Nombre")}
+        sort={:name}
+        responsive_font={true}
+        no_wrap={true}
+      >
+        <%= team.name %>
+      </:col>
+      <:col :let={team} label={gettext("ELO")} sort={:average_elo} align={:center}>
+        <%= team.average_elo %>
+      </:col>
+      <:col :let={team} label={gettext("Puntos")} sort={:points} align={:center}>
+        <%= team.points %>
+      </:col>
+    </.flop_table>
+  </div>
 </section>

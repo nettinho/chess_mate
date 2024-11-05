@@ -116,7 +116,7 @@ defmodule ChessMateWeb.TeamsLive.Show do
        draw: draw,
        current_year: current_year,
        player_count: Enum.count(players),
-       average_age: age_sum / Enum.count(players_with_age)
+       average_age: round(age_sum / Enum.count(players_with_age))
      )}
   end
 

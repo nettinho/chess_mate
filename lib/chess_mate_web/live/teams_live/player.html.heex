@@ -16,7 +16,7 @@
       <b><%= @player.title %></b> <%= @player.player.name %>
     </.header>
 
-    <div class="mb-8 max-w-md mx-auto rounded-lg border border-gray-100 bg-gray-50 p-2 sm:p-4 dark:border-gray-700 dark:bg-gray-800">
+    <div class="mb-8 max-w-md mx-auto rounded-lg border border-gray-100 bg-white p-2 sm:p-4 dark:border-gray-700 dark:bg-gray-800">
       <div class="divide-y divide-gray-200 dark:divide-gray-700 dark:border-gray-800">
         <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
           <dt class="text-sm font-medium text-gray-900 dark:text-white">
@@ -38,7 +38,7 @@
             <%= @player.elo %>
           </dd>
         </dl>
-        
+
         <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
           <dt class="text-sm font-medium text-gray-900 dark:text-white">
             <%= gettext("Edad") %>
@@ -48,7 +48,7 @@
             <%= @current_year - @player.player.birth_year %>
           </dd>
         </dl>
-        
+
         <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
           <dt class="text-sm font-medium text-gray-900 dark:text-white">
             <%= gettext("Año de nacimiento") %>
@@ -58,7 +58,7 @@
             <%= @player.player.birth_year %>
           </dd>
         </dl>
-        
+
         <dl class="flex items-center justify-between gap-4 py-1 sm:py-2">
           <dt class="text-sm font-medium text-gray-900 dark:text-white">
             <%= gettext("Género") %>
